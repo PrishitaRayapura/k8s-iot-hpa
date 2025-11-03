@@ -1,0 +1,31 @@
+import React, {useState} from 'react';
+
+export default function App(){
+  const [resp, setResp] = useState(null);
+  const [payload, setPayload] = useState('{"temp":25,"deviceId":"dev-001"}');
+
+  async function send(){
+    try{
+      const r = await fetch('/api/iot/data', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: payload
+      });
+      const j = await r.json();
+      setResp(j);
+    }catch(e){
+      setResp({error: String(e)});
+    }
+  }
+
+  return (
+    <div style={{fontFamily:'Arial',padding:20}}>
+      <h1>k8s-iot-hpa Frontend</h1>
+      <p>Simple UI to POST sample IoT JSON to backend <code>/api/iot/data</code></p>
+      <textarea rows="6" cols="60" value={payload} onChange={e=>setPayload(e.target.value)} />
+      <br/>
+      <button onClick={send} style={{marginTop:10}}>Send IoT Payload</button>
+      <pre style={{background:'#f5f5f5',padding:10,marginTop:10}}>{JSON.stringify(resp,null,2)}</pre>
+    </div>
+  );
+}
